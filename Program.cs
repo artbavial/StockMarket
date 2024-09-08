@@ -88,6 +88,9 @@ while (running)
 	decimal portfolioValue = CalculatePortfolioValue(playerStocks, stocks);
 	Console.WriteLine($"\nСтоимость вашего портфеля: ${portfolioValue:F2}");
 
+	// Генерация новостей
+	GenerateNews(stocks);
+
 	Console.WriteLine("\nВыберите действие:");
 
 	for (int i = 0; i < menuItems.Length; i++)
@@ -154,6 +157,52 @@ Console.WriteLine("Спасибо за игру!");
 
 
 
+
+static void GenerateNews(Dictionary<string, int> stocks)
+{
+	string[] newsTemplates = {
+		"Компания {0} объявила о рекордной прибыли.",
+		"Компания {0} столкнулась с крупными проблемами.",
+		"Компания {0} выпустила новый продукт.",
+		"Компания {0} объявила о сокращении штата.",
+		"Компания {0} получила крупный заказ.",
+		"Компания {0} объявила о слиянии с другой компанией.",
+		"Компания {0} запустила новую рекламную кампанию.",
+		"Компания {0} столкнулась с судебным иском.",
+		"Компания {0} объявила о новом партнерстве.",
+		"Компания {0} столкнулась с проблемами в цепочке поставок."
+	};
+
+	string[] rumorTemplates = {
+		"Слухи о том, что поставщик компании {0} может столкнуться с проблемами.",
+		"Слухи о том, что партнер компании {0} может объявить о банкротстве.",
+		"Слухи о том, что дочерняя компания {0} может выпустить новый продукт.",
+		"Слухи о том, что поставщик компании {0} может сократить штат.",
+		"Слухи о том, что партнер компании {0} может получить крупный заказ.",
+		"Слухи о том, что дочерняя компания {0} может объявить о слиянии.",
+		"Слухи о том, что поставщик компании {0} может запустить новую рекламную кампанию.",
+		"Слухи о том, что партнер компании {0} может столкнуться с судебным иском.",
+		"Слухи о том, что дочерняя компания {0} может объявить о новом партнерстве.",
+		"Слухи о том, что поставщик компании {0} может столкнуться с проблемами в цепочке поставок.",
+		"Слухи о том, что компания {0} может выпустить новый продукт.",
+		"Слухи о том, что компания {0} может запустить новую рекламную кампанию.",
+		"Слухи о том, что компания {0} может объявить о новом партнерстве.",
+		"Слухи о том, что компания {0} может столкнуться с проблемами в цепочке поставок.",
+		"Слухи о том, что компания {0} может сократить штат.",
+		"Слухи о том, что компания {0} может получить крупный заказ."
+	};
+
+	string stock = stocks.Keys.ElementAt(random.Next(stocks.Count));
+	string news = string.Format(newsTemplates[random.Next(newsTemplates.Length)], stock);
+	string rumor = string.Format(rumorTemplates[random.Next(rumorTemplates.Length)], stock);
+
+	// Определяем, хорошая новость или плохая
+	bool isGoodNews = news.Contains("рекордной прибыли") || news.Contains("новый продукт") || news.Contains("крупный заказ") || news.Contains("новое партнерство") || news.Contains("новую рекламную кампанию");
+	newsImpact[stock] = isGoodNews ? "good" : "bad";
+
+	Console.WriteLine($"\nНовости: {news}");
+	Console.WriteLine($"\nСлухи: {rumor}");
+}
 
 
 
@@ -270,6 +319,26 @@ static void UpdateStockPrices(Dictionary<string, int> stocks, Dictionary<string,
 	{
 		int previousPrice = stocks[stock];
 		int change = random.Next(-10, 11);
+
+		// Влияние новостей на изменение цены
+		if (newsImpact.ContainsKey(stock))
+		{
+			if (newsImpact[stock] == "good")
+			{
+				change += random.Next(5, 16); // Положительное влияние
+			}
+			else if (newsImpact[stock] == "bad")
+			{
+				change -= random.Next(5, 16); // Отрицательное влияние
+			}
+		}
+
+		// Влияние слухов на изменение цены (случайное)
+		if (random.Next(0, 2) == 0) // 50% шанс на влияние слухов
+		{
+			change += random.Next(-5, 6);
+		}
+
 		if (random.Next(0, 10) == 0) // 10% шанс на резкое изменение
 		{
 			change = random.Next(-50, 51);
@@ -283,7 +352,11 @@ static void UpdateStockPrices(Dictionary<string, int> stocks, Dictionary<string,
 			priceHistory[stock].RemoveAt(0);
 		}
 	}
+
+	// Очищаем новости после их применения
+	newsImpact.Clear();
 }
+
 
 
 
