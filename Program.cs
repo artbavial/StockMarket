@@ -160,6 +160,7 @@ Console.WriteLine("Спасибо за игру!");
 
 static void GenerateNews(Dictionary<string, int> stocks)
 {
+	Random rnd = new Random();
 	string[] newsTemplates = {
 		"Компания {0} объявила о рекордной прибыли.",
 		"Компания {0} столкнулась с крупными проблемами.",
@@ -192,9 +193,9 @@ static void GenerateNews(Dictionary<string, int> stocks)
 		"Слухи о том, что компания {0} может получить крупный заказ."
 	};
 
-	string stock = stocks.Keys.ElementAt(random.Next(stocks.Count));
-	string news = string.Format(newsTemplates[random.Next(newsTemplates.Length)], stock);
-	string rumor = string.Format(rumorTemplates[random.Next(rumorTemplates.Length)], stock);
+	string stock = stocks.Keys.ElementAt(rnd.Next(stocks.Count));
+	string news = string.Format(newsTemplates[rnd.Next(newsTemplates.Length)], stock);
+	string rumor = string.Format(rumorTemplates[rnd.Next(rumorTemplates.Length)], stock);
 
 	// Определяем, хорошая новость или плохая
 	bool isGoodNews = news.Contains("рекордной прибыли") || news.Contains("новый продукт") || news.Contains("крупный заказ") || news.Contains("новое партнерство") || news.Contains("новую рекламную кампанию");
@@ -321,6 +322,7 @@ static void UpdateStockPrices(Dictionary<string, int> stocks, Dictionary<string,
 		int change = random.Next(-10, 11);
 
 		// Влияние новостей на изменение цены
+
 		if (newsImpact.ContainsKey(stock))
 		{
 			if (newsImpact[stock] == "good")
