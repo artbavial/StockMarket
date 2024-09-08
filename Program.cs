@@ -214,7 +214,7 @@ static void BuyStocks(Dictionary<string, int> stocks, Dictionary<string, int> pl
 	Console.Clear();
 	int maxQuantity = balance / stocks[symbol];
 	Console.WriteLine($"Сколько акций {symbol} вы хотите купить? (Максимум: {maxQuantity})");
-	int quantity = int.Parse(Console.ReadLine());
+	int quantity = int.Parse(!string.IsNullOrEmpty(Console.ReadLine()) ? Console.ReadLine() : 0.ToString() );
 	int cost = stocks[symbol] * quantity;
 
 	if (balance >= cost)
